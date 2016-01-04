@@ -1,0 +1,4 @@
+name = memosaic_export
+description = Memosaic data export for ujszo
+package = Brainsum
+core = 7.x

@@ -1,0 +1,4 @@
+name = Geocode delay
+description = Sleeps a second on node_save to avoid blocking by google maps api
+package = Brainsum
+core = 7.x

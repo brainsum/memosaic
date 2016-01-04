@@ -1,0 +1,12 @@
+<?php
+/**
+ * Implemetation of hook node_save
+ * @author pedro@brainsum.com
+ **/
+function geocode_delay_node_save($node) {
+
+	watchdog('geocode_delay', 'geocode_delay.module sleeping at node nid %nid', array('%nid' => $node->nid), WATCHDOG_NOTICE, $link = NULL);
+	sleep(1);
+
+}
+

@@ -1,0 +1,10 @@
+2013.1.20.
+let map entity references by referenced entity's title
+cd sites/all/modules/entityreference && patch -p1 < entityreference-feeds_integration-1616680-66.patch
+patch for entityreference-7.x-1.0+3-dev
+
+2013.1.11.
+Avoiding OVER_QUERY_LIMIT in google geocode
+http://drupal.org/node/1672742
+http://drupal.org/files/google-geocoder-delay-1672742-9.patch
++ set http://www.memosaic.sk/admin/config/content/geocoder to 1000 (300 was'nt enough)

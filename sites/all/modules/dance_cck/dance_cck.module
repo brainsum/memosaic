@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the dance-cck feature.
+ */
+
+include_once 'dance_cck.features.inc';

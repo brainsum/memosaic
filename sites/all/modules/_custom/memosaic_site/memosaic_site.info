@@ -1,0 +1,4 @@
+name = memosaic_site
+description = Memosaic site functions 
+package = Brainsum
+core = 7.x

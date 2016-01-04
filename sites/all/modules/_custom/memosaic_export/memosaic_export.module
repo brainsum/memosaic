@@ -1,0 +1,70 @@
+<?php
+// $Id$
+
+ 
+function memosaic_export_menu() {
+  $items['memosaic_export/%'] = array(
+    'title' => 'Clone',
+    'page callback' => '_memosaic_export',
+    'page arguments' => array(1),
+		'access arguments' => array('access content'),    
+    'type' => MENU_LOCAL_TASK,
+  );
+ return $items;
+}
+
+function _memosaic_export( $place ){
+  $query = db_select('field_data_field_hungarian_name', 'hn');
+  $query->join('node', 'n', 'hn.entity_id = n.nid'); 
+  $query->fields('hn',array('field_hungarian_name_value'))
+    ->fields('n',array('nid','title'))
+    ->condition('n.status', 1 ,'=')
+    ->where('LOWER(hn.field_hungarian_name_value) = :place', array(':place' => strtolower( $place ) ))    
+    ->range(0,1);//LIMIT to 2 records
+   
+  $result = $query->execute();
+  $record = $result->fetchAssoc();
+  $node = node_load( $record['nid'] );
+  
+  $record['display_name'] = l( $record['field_hungarian_name_value'].' ('.$record['title'].')'  , 'node/'.$record['nid'], array('attributes' => array('target'=>'_blank'))  );
+  $district = node_load( $node->field_district['und'][0]['target_id'] );
+  $record['district'] = $district->title;
+  
+  $view_args = array( $node->nid );
+  $display_id = 'block_1';
+  $view = views_get_view('nationalities_at_a_municipality');
+  if (!empty($view)) {
+    $block = $view->execute_display($display_id , $view_args);
+    $record['nationality'] = $block['content'];
+  }  
+  
+  $query = db_select('field_data_field_obec', 'fo');
+  $query->join('node', 'n', 'fo.entity_id = n.nid'); 
+  $query->fields('fo',array('field_obec_value'))
+    ->fields('n',array('nid','title'))
+    ->condition('n.status', 1 ,'=')
+    ->condition('fo.bundle', 'mapmarker' ,'=')
+		->condition('fo.field_obec_value', '%' . db_like( $record['title'] ) . '%', 'LIKE')
+//    ->where('LOWER(fo.field_obec_value) LIKE LOWER("%:place%")', array(':place' => strtolower( $place ) ))
+    ->range(0,10);//LIMIT to 2 records
+   
+  $result2 = $query->execute();
+  while( $record2 = $result2->fetchAssoc() ){
+		//$record['organizations'][] = l( $record2['title']  , 'node/'.$record2['nid'], array('attributes' => array('target'=>'_blank'))  );
+		$record['organizations'][] =  $record2['title'] ;
+	}
+		
+	if( count( $record['organizations'] ) ){
+		$record['organizations_text'] = '<ul>';
+		foreach( $record['organizations'] as $key => $value ){
+			$record['organizations_text'].= '<li>'.$value.'</li>';			
+		}
+		$record['organizations_text'].= '</ul>';			
+	}
+		
+	//dsm( $record );
+	drupal_json_output( $record );
+  
+  //return 'test: '.$place;
+  
+}
